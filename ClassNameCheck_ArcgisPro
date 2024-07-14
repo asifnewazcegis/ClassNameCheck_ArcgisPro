@@ -1,4 +1,4 @@
-dimport arcpy
+import arcpy
 
 #Input Feature class name
 fcsname="ASN"
