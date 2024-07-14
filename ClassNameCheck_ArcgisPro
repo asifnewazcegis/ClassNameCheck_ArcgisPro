@@ -1,0 +1,32 @@
+import arcpy
+
+#Input Feature class name
+fcsname="ASN"
+
+
+
+# Don't edit
+project = arcpy.mp.ArcGISProject("CURRENT")
+maps = project.activeMap
+p = {}
+layers = maps.listLayers()                #@MdAsifNewazCEGIS
+for lyr in layers:
+    if lyr.name == fcsname:
+        arcpy.SelectLayerByAttribute_management(lyr, "CLEAR_SELECTION")
+        project.save()
+        l = {row[0] for row in arcpy.da.SearchCursor(lyr, ["class_name"])}
+        arcpy.env.workspace = lyr.connectionProperties['connection_info']['database']
+        datast = arcpy.ListDatasets(feature_type='feature') or ['']
+        for ds in datast:
+            for fc in arcpy.ListFeatureClasses(feature_dataset=ds):
+                if fc == fcsname:
+                    for domain in arcpy.da.ListDomains(lyr.connectionProperties['connection_info']['database']):
+                        if domain.domainType == "CodedValue":
+                            p |= {val: desc for val, desc in domain.codedValues.items() if val in l}
+
+ky = list(p.keys())     #@MdAsifNewazCEGIS
+ky.sort()
+srt = {i: p[i] for i in ky}
+for x, y in srt.items():
+  print(f"{x} : {y}")
+print("\nTotal Assigned Class: "+f"{len(p)}")
