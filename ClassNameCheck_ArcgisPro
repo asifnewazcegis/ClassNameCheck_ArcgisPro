@@ -1,4 +1,4 @@
-import arcpy
+dimport arcpy
 
 #Input Feature class name
 fcsname="ASN"
@@ -14,7 +14,7 @@ for lyr in layers:
     if lyr.name == fcsname:
         arcpy.SelectLayerByAttribute_management(lyr, "CLEAR_SELECTION")
         project.save()
-        l = {row[0] for row in arcpy.da.SearchCursor(lyr, ["class_name"])}
+        l = {row[0] for row in arcpy.da.SearchCursor(lyr, ["fieldname"])}
         arcpy.env.workspace = lyr.connectionProperties['connection_info']['database']
         datast = arcpy.ListDatasets(feature_type='feature') or ['']
         for ds in datast:
